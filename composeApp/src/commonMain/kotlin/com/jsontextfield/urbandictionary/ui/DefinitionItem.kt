@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Bookmark
+import androidx.compose.material.icons.rounded.BookmarkBorder
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.material3.Card
@@ -28,7 +30,7 @@ import com.jsontextfield.urbandictionary.util.toAnnotatedString
 fun DefinitionItem(definition: Definition) {
     Column(
         modifier = Modifier.padding(24.dp).widthIn(max = 400.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Row {
             Text(
@@ -38,10 +40,13 @@ fun DefinitionItem(definition: Definition) {
             )
 
             IconButton(onClick = {}) {
-                Icon(Icons.Rounded.Star, contentDescription = null)
+                Icon(Icons.Rounded.BookmarkBorder, contentDescription = null)
             }
         }
-        Text(definition.definition.toAnnotatedString(), style = MaterialTheme.typography.bodyMedium)
+        Text(
+            definition.definition.toAnnotatedString(),
+            style = MaterialTheme.typography.bodyMedium
+        )
         Text(
             definition.example.toAnnotatedString(),
             style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic)
