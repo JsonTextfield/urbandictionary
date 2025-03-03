@@ -31,9 +31,13 @@ import com.jsontextfield.urbandictionary.network.model.Definition
 import com.jsontextfield.urbandictionary.util.toAnnotatedString
 
 @Composable
-fun DefinitionItem(definition: Definition) {
+fun DefinitionItem(
+    definition: Definition,
+    modifier: Modifier = Modifier,
+    onBookmarkPressed: () -> Unit = {},
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .widthIn(max = 400.dp)
             .background(
                 MaterialTheme.colorScheme.onSecondary,
@@ -49,16 +53,19 @@ fun DefinitionItem(definition: Definition) {
                 modifier = Modifier.weight(1f)
             )
 
-            IconButton(onClick = {}) {
-                Icon(Icons.Rounded.BookmarkBorder, contentDescription = null)
+            IconButton(onClick = onBookmarkPressed) {
+                Icon(
+                    Icons.Rounded.BookmarkBorder,
+                    contentDescription = "Bookmark"
+                )
             }
         }
         Text(
-            definition.definition.toAnnotatedString(),
+            definition.definition.toAnnotatedString(MaterialTheme.colorScheme.primary),
             style = MaterialTheme.typography.bodyMedium
         )
         Text(
-            definition.example.toAnnotatedString(),
+            definition.example.toAnnotatedString(MaterialTheme.colorScheme.primary),
             style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic)
         )
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -79,7 +86,10 @@ fun DefinitionItem(definition: Definition) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Icon(Icons.Rounded.ThumbUp, contentDescription = null)
+                Icon(
+                    Icons.Rounded.ThumbUp,
+                    contentDescription = "Thumbs up"
+                )
                 Text(definition.thumbsUp.toString())
             }
             Row(
@@ -88,7 +98,7 @@ fun DefinitionItem(definition: Definition) {
             ) {
                 Icon(
                     Icons.Rounded.ThumbUp,
-                    contentDescription = null,
+                    contentDescription = "Thumbs down",
                     modifier = Modifier.rotate(180f)
                 )
                 Text(definition.thumbsDown.toString())

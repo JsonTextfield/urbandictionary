@@ -18,7 +18,7 @@ data class UrbanDictionaryResponse(
 @Serializable
 data class Definition(
     val definition: String,
-    val date: String,
+    val date: String = "",
     val permalink: String,
     @JsonNames("thumbs_up") val thumbsUp: Int,
     val author: String,

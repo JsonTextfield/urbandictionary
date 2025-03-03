@@ -14,14 +14,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val dictionaryDataSource: IUrbanDictionaryDataSource) : ViewModel() {
+class MainViewModel(
+    private val dictionaryDataSource: IUrbanDictionaryDataSource,
+//    private val preferencesRepository: IPreferencesRepository,
+) : ViewModel() {
 
+    private var _listType: MutableStateFlow<ListType> = MutableStateFlow(ListType.HOME)
+    val listType: StateFlow<ListType> = _listType.asStateFlow()
     private var _wordsOfTheDay: MutableStateFlow<List<Definition>> = MutableStateFlow(emptyList())
-    val wordsOfTheDay: StateFlow<List<Definition>> = _wordsOfTheDay.asStateFlow()
-
-    private var _randomWords: MutableStateFlow<List<Definition>> = MutableStateFlow(emptyList())
-    val randomWords: StateFlow<List<Definition>> = _randomWords.asStateFlow()
-
+    var displayList by mutableStateOf(emptyList<Definition>())
     private var _autoCompleteSuggestions: MutableStateFlow<List<String>> =
         MutableStateFlow(emptyList())
     val autoCompleteSuggestions: StateFlow<List<String>> = _autoCompleteSuggestions.asStateFlow()
@@ -34,33 +35,42 @@ class MainViewModel(private val dictionaryDataSource: IUrbanDictionaryDataSource
     init {
         viewModelScope.launch {
             _wordsOfTheDay.value = dictionaryDataSource.getWordsOfTheDay()
-        }
-    }
-
-    fun getRandomWords() {
-        viewModelScope.launch {
-            _randomWords.value = dictionaryDataSource.getRandomWords()
+            onListTypeChanged(ListType.HOME)
         }
     }
 
     private fun getAutoCompleteSuggestions(text: String) {
-        if (text.isEmpty()) {
-            _autoCompleteSuggestions.value = emptyList()
-        }
-        else {
-            viewModelScope.launch {
-                _autoCompleteSuggestions.value =
-                    dictionaryDataSource.getAutocompleteSuggestions(text)
-            }
+        viewModelScope.launch {
+            _autoCompleteSuggestions.value =
+                dictionaryDataSource.getAutocompleteSuggestions(text)
         }
     }
 
+    /**
+     * Show the autocomplete options when the search text is updated
+     */
     fun onSearchTextChanged(value: String) {
         searchText = value
         suggestionsJob?.cancel()
         suggestionsJob = viewModelScope.launch {
-            delay(1000)
-            getAutoCompleteSuggestions(searchText)
+            if (searchText.isNotBlank()) {
+                delay(1000)
+                getAutoCompleteSuggestions(searchText)
+            } else {
+                _autoCompleteSuggestions.value = emptyList()
+            }
+        }
+    }
+
+    fun onListTypeChanged(value: ListType) {
+        viewModelScope.launch {
+            _listType.value = value
+            displayList = when (value) {
+                ListType.HOME -> _wordsOfTheDay.value
+                ListType.SEARCH -> dictionaryDataSource.getDefinitions(searchText)
+                ListType.RANDOM -> dictionaryDataSource.getRandomWords()
+                ListType.BOOKMARKS -> emptyList()
+            }
         }
     }
 
@@ -69,4 +79,8 @@ class MainViewModel(private val dictionaryDataSource: IUrbanDictionaryDataSource
         suggestionsJob = null
         super.onCleared()
     }
+}
+
+enum class ListType {
+    HOME, SEARCH, RANDOM, BOOKMARKS
 }
