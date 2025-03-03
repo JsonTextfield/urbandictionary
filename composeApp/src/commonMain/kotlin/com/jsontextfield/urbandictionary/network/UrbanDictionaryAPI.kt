@@ -24,6 +24,15 @@ class UrbanDictionaryAPI(private val client: HttpClient) {
         }.body()
     }
 
+    suspend fun getWordDefinition(id: Int): UrbanDictionaryResponse {
+        return client.get {
+            url {
+                path("v0/define")
+                parameter("defid", id)
+            }
+        }.body()
+    }
+
     suspend fun getWordDefinition(word: String): UrbanDictionaryResponse {
         return client.get {
             url {

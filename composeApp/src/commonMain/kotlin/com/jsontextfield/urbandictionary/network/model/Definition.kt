@@ -17,16 +17,16 @@ data class UrbanDictionaryResponse(
 
 @Serializable
 data class Definition(
+    val defid: Int,
+    val word: String,
     val definition: String,
+    val author: String,
     val date: String = "",
     val permalink: String,
-    @JsonNames("thumbs_up") val thumbsUp: Int,
-    val author: String,
-    val word: String,
-    val defid: Int,
+    val example: String,
     @JsonNames("current_vote") val currentVote: String,
     @JsonNames("written_on") val writtenOn: String,
-    val example: String,
+    @JsonNames("thumbs_up") val thumbsUp: Int,
     @JsonNames("thumbs_down") val thumbsDown: Int
 ){
     @OptIn(FormatStringsInDatetimeFormats::class)

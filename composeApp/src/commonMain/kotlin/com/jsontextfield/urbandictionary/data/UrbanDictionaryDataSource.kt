@@ -6,6 +6,10 @@ import com.jsontextfield.urbandictionary.network.model.Definition
 class UrbanDictionaryDataSource(
     private val urbanDictionaryAPI: UrbanDictionaryAPI,
 ) : IUrbanDictionaryDataSource {
+    override suspend fun getDefinition(id: Int): List<Definition> {
+        return urbanDictionaryAPI.getWordDefinition(id).definitions
+    }
+
     override suspend fun getDefinitions(term: String): List<Definition> {
         return urbanDictionaryAPI.getWordDefinition(term).definitions
     }

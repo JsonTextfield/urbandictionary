@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jsontextfield.urbandictionary.data.IPreferencesRepository
 import com.jsontextfield.urbandictionary.data.IUrbanDictionaryDataSource
 import com.jsontextfield.urbandictionary.network.model.Definition
 import kotlinx.coroutines.Job
@@ -16,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val dictionaryDataSource: IUrbanDictionaryDataSource,
-//    private val preferencesRepository: IPreferencesRepository,
+    private val preferencesRepository: IPreferencesRepository,
 ) : ViewModel() {
 
     private var _listType: MutableStateFlow<ListType> = MutableStateFlow(ListType.HOME)
@@ -54,7 +55,7 @@ class MainViewModel(
         suggestionsJob?.cancel()
         suggestionsJob = viewModelScope.launch {
             if (searchText.isNotBlank()) {
-                delay(1000)
+                delay(500)
                 getAutoCompleteSuggestions(searchText)
             } else {
                 _autoCompleteSuggestions.value = emptyList()
@@ -69,7 +70,21 @@ class MainViewModel(
                 ListType.HOME -> _wordsOfTheDay.value
                 ListType.SEARCH -> dictionaryDataSource.getDefinitions(searchText)
                 ListType.RANDOM -> dictionaryDataSource.getRandomWords()
-                ListType.BOOKMARKS -> emptyList()
+                ListType.BOOKMARKS -> {
+                    preferencesRepository.getBookmarks().flatMap {
+                        dictionaryDataSource.getDefinition(it)
+                    }
+                }
+            }
+        }
+    }
+
+    fun onBookmark(id: Int) {
+        viewModelScope.launch {
+            if (id in preferencesRepository.getBookmarks()) {
+                preferencesRepository.removeBookmark(id)
+            } else {
+                preferencesRepository.addBookmark(id)
             }
         }
     }

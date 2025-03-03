@@ -1,6 +1,8 @@
 package com.jsontextfield.departurescreen.di
 
+import com.jsontextfield.urbandictionary.data.IPreferencesRepository
 import com.jsontextfield.urbandictionary.data.IUrbanDictionaryDataSource
+import com.jsontextfield.urbandictionary.data.PreferencesRepository
 import com.jsontextfield.urbandictionary.data.UrbanDictionaryDataSource
 import com.jsontextfield.urbandictionary.network.UrbanDictionaryAPI
 import com.jsontextfield.urbandictionary.ui.MainViewModel
@@ -44,6 +46,9 @@ val dataModule = module {
     single<UrbanDictionaryAPI> { UrbanDictionaryAPI(get<HttpClient>()) }
     single<IUrbanDictionaryDataSource> {
         UrbanDictionaryDataSource(get<UrbanDictionaryAPI>())
+    }
+    single<IPreferencesRepository> {
+        PreferencesRepository()
     }
 }
 

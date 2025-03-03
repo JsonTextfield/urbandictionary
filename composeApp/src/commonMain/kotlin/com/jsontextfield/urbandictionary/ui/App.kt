@@ -53,20 +53,23 @@ fun App() {
         val mainViewModel = koinViewModel<MainViewModel>()
         val listType by mainViewModel.listType.collectAsState()
         val autoCompleteSuggestions by mainViewModel.autoCompleteSuggestions.collectAsState()
+        var expanded by remember { mutableStateOf(true) }
         Scaffold(topBar = {
             TopAppBar(navigationIcon = {
                 if (listType != ListType.HOME) {
                     IconButton(onClick = {
                         mainViewModel.onListTypeChanged(ListType.HOME)
                     }) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, null)
+                        Icon(
+                            Icons.AutoMirrored.Rounded.ArrowBack,
+                            contentDescription = "Back"
+                        )
                     }
                 }
             }, title = {
                 when (listType) {
                     ListType.HOME, ListType.SEARCH -> {
                         if (mainViewModel.searchText.isNotEmpty() && autoCompleteSuggestions.size > 1) {
-                            var expanded by remember { mutableStateOf(true) }
                             LaunchedEffect(mainViewModel.searchText) {
                                 expanded = mainViewModel.searchText !in autoCompleteSuggestions
                             }
@@ -102,6 +105,7 @@ fun App() {
                             textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground),
                             cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
                             keyboardActions = KeyboardActions(onSearch = {
+                                expanded = false
                                 mainViewModel.onListTypeChanged(ListType.SEARCH)
                             }),
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
@@ -130,7 +134,10 @@ fun App() {
                                             mainViewModel.onSearchTextChanged("")
                                             mainViewModel.onListTypeChanged(ListType.HOME)
                                         }) {
-                                            Icon(Icons.Rounded.Clear, null)
+                                            Icon(
+                                                Icons.Rounded.Clear,
+                                                contentDescription = "Clear",
+                                            )
                                         }
                                     }
                                 }
@@ -151,14 +158,20 @@ fun App() {
                     IconButton(onClick = {
                         mainViewModel.onListTypeChanged(ListType.RANDOM)
                     }) {
-                        Icon(Icons.Rounded.Shuffle, contentDescription = "Random words")
+                        Icon(
+                            Icons.Rounded.Shuffle,
+                            contentDescription = "Random words"
+                        )
                     }
                 }
                 if (listType == ListType.HOME) {
                     IconButton(onClick = {
                         mainViewModel.onListTypeChanged(ListType.BOOKMARKS)
                     }) {
-                        Icon(Icons.Rounded.Bookmark, contentDescription = "Bookmarks")
+                        Icon(
+                            Icons.Rounded.Bookmark,
+                            contentDescription = "Bookmarks"
+                        )
                     }
                 }
             })
@@ -173,7 +186,13 @@ fun App() {
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(mainViewModel.displayList, key = { item -> item.defid }) { definition ->
-                    DefinitionItem(definition, modifier = Modifier.animateItem())
+                    DefinitionItem(
+                        definition,
+                        modifier = Modifier.animateItem(),
+                        onBookmarkPressed = {
+                            mainViewModel.onBookmark(definition.defid)
+                        },
+                    )
                 }
             }
         }
