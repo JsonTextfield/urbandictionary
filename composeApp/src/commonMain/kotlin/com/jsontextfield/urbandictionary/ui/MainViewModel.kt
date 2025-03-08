@@ -76,6 +76,8 @@ class MainViewModel(
                         dictionaryDataSource.getDefinition(it)
                     }
                 }
+            }.map {
+                it.copy(isBookmarked = it.defid in preferencesRepository.getBookmarks())
             }
         }
     }
@@ -103,6 +105,14 @@ class MainViewModel(
             }
             else {
                 preferencesRepository.addBookmark(id)
+            }
+            displayList = displayList.map {
+                if (it.defid == id) {
+                    it.copy(isBookmarked = id in preferencesRepository.getBookmarks())
+                }
+                else {
+                    it
+                }
             }
         }
     }

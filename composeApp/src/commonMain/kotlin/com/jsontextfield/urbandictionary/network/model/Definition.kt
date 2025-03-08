@@ -27,7 +27,8 @@ data class Definition(
     @JsonNames("current_vote") val currentVote: String,
     @JsonNames("written_on") val writtenOn: String,
     @JsonNames("thumbs_up") val thumbsUp: Int,
-    @JsonNames("thumbs_down") val thumbsDown: Int
+    @JsonNames("thumbs_down") val thumbsDown: Int,
+    val isBookmarked: Boolean = false
 ){
     @OptIn(FormatStringsInDatetimeFormats::class)
     val writtenOnDate: String
@@ -41,6 +42,4 @@ data class Definition(
         val date = inputFormatter.parse(writtenOn)
         return date.format(outputFormatter)
     }
-
-    var isBookmarked = false
 }
