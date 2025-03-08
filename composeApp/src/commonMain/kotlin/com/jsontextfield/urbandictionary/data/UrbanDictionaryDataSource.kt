@@ -10,12 +10,14 @@ class UrbanDictionaryDataSource(
         return urbanDictionaryAPI.getWordDefinition(id).definitions
     }
 
-    override suspend fun getDefinitions(term: String): List<Definition> {
-        return urbanDictionaryAPI.getWordDefinition(term).definitions
+    override suspend fun getDefinitions(term: String, size: Int): List<Definition> {
+        val page = if (size > 9 && size % 10 == 0) size / 10 + 1 else 1
+        return urbanDictionaryAPI.getWordDefinition(term, page).definitions
     }
 
-    override suspend fun getWordsOfTheDay(): List<Definition> {
-        return urbanDictionaryAPI.getWordsOfTheDay().definitions
+    override suspend fun getWordsOfTheDay(size: Int): List<Definition> {
+        val page = if (size > 9 && size % 10 == 0) size / 10 + 1 else 1
+        return urbanDictionaryAPI.getWordsOfTheDay(page).definitions
     }
 
     override suspend fun getAutocompleteSuggestions(query: String): List<String> {

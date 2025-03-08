@@ -2,13 +2,17 @@ package com.jsontextfield.urbandictionary.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -41,6 +45,7 @@ import androidx.compose.ui.window.PopupProperties
 import com.jsontextfield.departurescreen.di.viewModelModule
 import com.jsontextfield.urbandictionary.ui.theme.MyApplicationTheme
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.exp
@@ -53,7 +58,16 @@ fun App() {
         val mainViewModel = koinViewModel<MainViewModel>()
         val listType by mainViewModel.listType.collectAsState()
         val autoCompleteSuggestions by mainViewModel.autoCompleteSuggestions.collectAsState()
+        val listState = rememberLazyListState()
         var expanded by remember { mutableStateOf(true) }
+        LaunchedEffect(listState) {
+            snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+                .collect { lastIndex ->
+                    if (lastIndex == mainViewModel.displayList.lastIndex) {
+                        mainViewModel.loadMore()
+                    }
+                }
+        }
         Scaffold(topBar = {
             TopAppBar(navigationIcon = {
                 if (listType != ListType.HOME) {
@@ -177,6 +191,11 @@ fun App() {
             })
         }) {
             LazyColumn(
+                state = listState,
+                contentPadding = PaddingValues(
+                    top = 12.dp,
+                    bottom = 200.dp,
+                ),
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(it)

@@ -35,7 +35,7 @@ class MainViewModel(
 
     init {
         viewModelScope.launch {
-            _wordsOfTheDay.value = dictionaryDataSource.getWordsOfTheDay()
+            _wordsOfTheDay.value = dictionaryDataSource.getWordsOfTheDay(_wordsOfTheDay.value.size)
             onListTypeChanged(ListType.HOME)
         }
     }
@@ -57,7 +57,8 @@ class MainViewModel(
             if (searchText.isNotBlank()) {
                 delay(500)
                 getAutoCompleteSuggestions(searchText)
-            } else {
+            }
+            else {
                 _autoCompleteSuggestions.value = emptyList()
             }
         }
@@ -67,8 +68,8 @@ class MainViewModel(
         viewModelScope.launch {
             _listType.value = value
             displayList = when (value) {
-                ListType.HOME -> _wordsOfTheDay.value
-                ListType.SEARCH -> dictionaryDataSource.getDefinitions(searchText)
+                ListType.HOME -> dictionaryDataSource.getWordsOfTheDay(0)
+                ListType.SEARCH -> dictionaryDataSource.getDefinitions(searchText.lowercase(), 0)
                 ListType.RANDOM -> dictionaryDataSource.getRandomWords()
                 ListType.BOOKMARKS -> {
                     preferencesRepository.getBookmarks().flatMap {
@@ -79,11 +80,28 @@ class MainViewModel(
         }
     }
 
+    fun loadMore() {
+        viewModelScope.launch {
+            if (listType.value == ListType.SEARCH) {
+                displayList = displayList + dictionaryDataSource.getDefinitions(
+                    searchText.lowercase(),
+                    displayList.size
+                )
+            }
+            else if (listType.value == ListType.HOME) {
+                displayList = displayList + dictionaryDataSource.getWordsOfTheDay(
+                    displayList.size
+                )
+            }
+        }
+    }
+
     fun onBookmark(id: Int) {
         viewModelScope.launch {
             if (id in preferencesRepository.getBookmarks()) {
                 preferencesRepository.removeBookmark(id)
-            } else {
+            }
+            else {
                 preferencesRepository.addBookmark(id)
             }
         }

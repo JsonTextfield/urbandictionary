@@ -16,10 +16,11 @@ class UrbanDictionaryAPI(private val client: HttpClient) {
         }.body()
     }
 
-    suspend fun getWordsOfTheDay(): UrbanDictionaryResponse {
+    suspend fun getWordsOfTheDay(page: Int = 1): UrbanDictionaryResponse {
         return client.get {
             url {
                 path("v0/words_of_the_day")
+                parameter("page", page)
             }
         }.body()
     }
@@ -33,11 +34,12 @@ class UrbanDictionaryAPI(private val client: HttpClient) {
         }.body()
     }
 
-    suspend fun getWordDefinition(word: String): UrbanDictionaryResponse {
+    suspend fun getWordDefinition(word: String, page: Int = 1): UrbanDictionaryResponse {
         return client.get {
             url {
                 path("v0/define")
                 parameter("term", word)
+                parameter("page", page)
             }
         }.body()
     }
