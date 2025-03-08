@@ -12,8 +12,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.Shuffle
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,9 +29,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupProperties
 import com.jsontextfield.urbandictionary.ui.theme.MyApplicationTheme
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
@@ -156,6 +152,10 @@ fun App() {
                         onBookmarkPressed = {
                             mainViewModel.onBookmark(definition.defid)
                         },
+                        onTextClicked = { text ->
+                            mainViewModel.onSearchTextChanged(text)
+                            mainViewModel.onListTypeChanged(ListType.SEARCH)
+                        }
                     )
                 }
             }

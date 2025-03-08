@@ -33,6 +33,7 @@ fun DefinitionItem(
     definition: Definition,
     modifier: Modifier = Modifier,
     onBookmarkPressed: () -> Unit = {},
+    onTextClicked: (String) -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -58,11 +59,17 @@ fun DefinitionItem(
             }
         }
         Text(
-            definition.definition.toAnnotatedString(MaterialTheme.colorScheme.primary),
+            definition.definition.toAnnotatedString(
+                MaterialTheme.colorScheme.primary,
+                onLinkClicked = onTextClicked
+            ),
             style = MaterialTheme.typography.bodyMedium
         )
         Text(
-            definition.example.toAnnotatedString(MaterialTheme.colorScheme.primary),
+            definition.example.toAnnotatedString(
+                MaterialTheme.colorScheme.primary,
+                onLinkClicked = onTextClicked
+            ),
             style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic)
         )
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
