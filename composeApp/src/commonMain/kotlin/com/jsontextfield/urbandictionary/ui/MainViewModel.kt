@@ -57,8 +57,7 @@ class MainViewModel(
             if (searchText.isNotBlank()) {
                 delay(500)
                 getAutoCompleteSuggestions(searchText)
-            }
-            else {
+            } else {
                 _autoCompleteSuggestions.value = emptyList()
             }
         }
@@ -84,16 +83,17 @@ class MainViewModel(
 
     fun loadMore() {
         viewModelScope.launch {
-            if (listType.value == ListType.SEARCH) {
-                displayList = displayList + dictionaryDataSource.getDefinitions(
-                    searchText.lowercase(),
-                    displayList.size
-                )
-            }
-            else if (listType.value == ListType.HOME) {
-                displayList = displayList + dictionaryDataSource.getWordsOfTheDay(
-                    displayList.size
-                )
+            if (displayList.size > 9) {
+                if (listType.value == ListType.SEARCH) {
+                    displayList = displayList + dictionaryDataSource.getDefinitions(
+                        searchText.lowercase(),
+                        displayList.size
+                    )
+                } else if (listType.value == ListType.HOME) {
+                    displayList = displayList + dictionaryDataSource.getWordsOfTheDay(
+                        displayList.size
+                    )
+                }
             }
         }
     }
@@ -102,15 +102,13 @@ class MainViewModel(
         viewModelScope.launch {
             if (id in preferencesRepository.getBookmarks()) {
                 preferencesRepository.removeBookmark(id)
-            }
-            else {
+            } else {
                 preferencesRepository.addBookmark(id)
             }
             displayList = displayList.map {
                 if (it.defid == id) {
                     it.copy(isBookmarked = id in preferencesRepository.getBookmarks())
-                }
-                else {
+                } else {
                     it
                 }
             }
