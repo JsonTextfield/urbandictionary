@@ -6,4 +6,6 @@ interface IPreferencesRepository {
     suspend fun addBookmark(id: Int)
 
     suspend fun removeBookmark(id: Int)
+
+    suspend fun isBookmarked(id: Int) : Boolean
 }

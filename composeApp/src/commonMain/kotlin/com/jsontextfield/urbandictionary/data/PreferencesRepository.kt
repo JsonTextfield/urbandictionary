@@ -14,4 +14,8 @@ class PreferencesRepository : IPreferencesRepository {
         bookmarks.remove(id)
     }
 
+    override suspend fun isBookmarked(id: Int): Boolean {
+        return id in bookmarks
+    }
+
 }

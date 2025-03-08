@@ -42,4 +42,5 @@ data class Definition(
         return date.format(outputFormatter)
     }
 
+    var isBookmarked = false
 }
