@@ -31,9 +31,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import com.jsontextfield.urbandictionary.ui.theme.MyApplicationTheme
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -59,82 +61,80 @@ fun App() {
                     }
                 }
         }
-        Scaffold(topBar = {
-            TopAppBar(navigationIcon = {
-                if (listType != ListType.HOME) {
-                    IconButton(onClick = {
-                        mainViewModel.onListTypeChanged(ListType.HOME)
-                    }) {
-                        Icon(
-                            Icons.AutoMirrored.Rounded.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
-            }, title = {
-                when (listType) {
-                    ListType.HOME, ListType.SEARCH -> {
-                        if (mainViewModel.searchText.isNotEmpty() && autoCompleteSuggestions.size > 1) {
-                            LaunchedEffect(mainViewModel.searchText) {
-                                expanded = mainViewModel.searchText !in autoCompleteSuggestions
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    navigationIcon = {
+                        if (listType != ListType.HOME) {
+                            IconButton(onClick = {
+                                mainViewModel.onListTypeChanged(ListType.HOME)
+                            }) {
+                                Icon(
+                                    Icons.AutoMirrored.Rounded.ArrowBack,
+                                    contentDescription = "Back"
+                                )
                             }
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = {},
-                                properties = PopupProperties(focusable = false)
-                            ) {
-                                autoCompleteSuggestions.take(10).forEach {
-                                    DropdownMenuItem(
-                                        text = {
-                                            Text(it)
-                                        },
-                                        onClick = {
+                        }
+                    },
+                    title = {
+                        when (listType) {
+                            ListType.HOME, ListType.SEARCH -> {
+                                LaunchedEffect(autoCompleteSuggestions) {
+                                    delay(500)
+                                    expanded = true
+                                }
+                                if (expanded) {
+                                    SuggestionDropdown(
+                                        suggestions = autoCompleteSuggestions,
+                                        onSuggestionSelected = {
                                             mainViewModel.onSearchTextChanged(it)
                                             mainViewModel.onListTypeChanged(ListType.SEARCH)
                                             expanded = false
                                         },
                                     )
                                 }
+                                SearchBar(
+                                    text = mainViewModel.searchText,
+                                    onTextChange = mainViewModel::onSearchTextChanged,
+                                    onSearch = { mainViewModel.onListTypeChanged(ListType.SEARCH) },
+                                    onTextCleared = { mainViewModel.onListTypeChanged(ListType.HOME) },
+                                )
+                            }
+
+                            ListType.RANDOM -> {
+                                Text(stringResource(Res.string.random_words))
+                            }
+
+                            ListType.BOOKMARKS -> {
+                                Text(stringResource(Res.string.bookmarks))
                             }
                         }
-                        SearchBar(
-                            text = mainViewModel.searchText,
-                            onTextChange = mainViewModel::onSearchTextChanged,
-                            onSearch = { mainViewModel.onListTypeChanged(ListType.SEARCH) },
-                            onTextCleared = { mainViewModel.onListTypeChanged(ListType.HOME) })
-                    }
-
-                    ListType.RANDOM -> {
-                        Text(stringResource(Res.string.random_words))
-                    }
-
-                    ListType.BOOKMARKS -> {
-                        Text(stringResource(Res.string.bookmarks))
-                    }
-                }
-            }, actions = {
-                if (listType == ListType.HOME || listType == ListType.RANDOM) {
-                    IconButton(onClick = {
-                        mainViewModel.onListTypeChanged(ListType.RANDOM)
-                    }) {
-                        Icon(
-                            Icons.Rounded.Shuffle,
-                            contentDescription = stringResource(Res.string.random_words)
-                        )
-                    }
-                }
-                if (listType == ListType.HOME) {
-                    IconButton(onClick = {
-                        mainViewModel.onListTypeChanged(ListType.BOOKMARKS)
-                    }) {
-                        Icon(
-                            Icons.Rounded.Bookmark,
-                            contentDescription = stringResource(Res.string.bookmarks)
-                        )
-                    }
-                }
-            })
-        }) {
+                    },
+                    actions = {
+                        if (listType == ListType.HOME || listType == ListType.RANDOM) {
+                            IconButton(onClick = {
+                                mainViewModel.onListTypeChanged(ListType.RANDOM)
+                            }) {
+                                Icon(
+                                    Icons.Rounded.Shuffle,
+                                    contentDescription = stringResource(Res.string.random_words)
+                                )
+                            }
+                        }
+                        if (listType == ListType.HOME) {
+                            IconButton(onClick = {
+                                mainViewModel.onListTypeChanged(ListType.BOOKMARKS)
+                            }) {
+                                Icon(
+                                    Icons.Rounded.Bookmark,
+                                    contentDescription = stringResource(Res.string.bookmarks)
+                                )
+                            }
+                        }
+                    },
+                )
+            },
+        ) {
             LazyColumn(
                 state = listState,
                 contentPadding = PaddingValues(
