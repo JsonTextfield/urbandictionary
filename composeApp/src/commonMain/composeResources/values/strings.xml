@@ -2,4 +2,9 @@
     <string name="random_words">Random words</string>
     <string name="bookmarks">Bookmarks</string>
     <string name="bookmark">Bookmark</string>
+    <string name="back">Back</string>
+    <string name="thumbs_up">Thumbs down</string>
+    <string name="thumbs_down">Thumbs up</string>
+    <string name="clear">Clear</string>
+    <string name="search">Search</string>
 </resources>

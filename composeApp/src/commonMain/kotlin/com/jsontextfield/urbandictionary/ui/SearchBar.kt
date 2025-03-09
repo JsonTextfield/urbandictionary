@@ -29,6 +29,10 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
+import urbandictionary.composeapp.generated.resources.Res
+import urbandictionary.composeapp.generated.resources.clear
+import urbandictionary.composeapp.generated.resources.search
 
 @Composable
 fun SearchBar(
@@ -64,7 +68,7 @@ fun SearchBar(
                 Box(modifier = Modifier.weight(1f)) {
                     if (text.isEmpty()) {
                         Text(
-                            "Search",
+                            stringResource(Res.string.search),
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 color = MaterialTheme.colorScheme.onBackground.copy(
                                     alpha = .8f
@@ -81,7 +85,7 @@ fun SearchBar(
                     }) {
                         Icon(
                             Icons.Rounded.Clear,
-                            contentDescription = "Clear",
+                            contentDescription = stringResource(Res.string.clear),
                         )
                     }
                 }

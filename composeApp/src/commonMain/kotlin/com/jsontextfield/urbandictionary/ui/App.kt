@@ -16,6 +16,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -36,6 +37,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import urbandictionary.composeapp.generated.resources.Res
+import urbandictionary.composeapp.generated.resources.back
 import urbandictionary.composeapp.generated.resources.bookmarks
 import urbandictionary.composeapp.generated.resources.random_words
 
@@ -48,7 +50,7 @@ fun App() {
         val listType by mainViewModel.listType.collectAsState()
         val autoCompleteSuggestions by mainViewModel.autoCompleteSuggestions.collectAsState()
         val listState = rememberLazyListState()
-        var expanded by remember { mutableStateOf(true) }
+        var showAutocomplete by remember { mutableStateOf(true) }
         LaunchedEffect(listState) {
             snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
                 .collect { lastIndex ->
@@ -67,7 +69,7 @@ fun App() {
                             }) {
                                 Icon(
                                     Icons.AutoMirrored.Rounded.ArrowBack,
-                                    contentDescription = "Back"
+                                    contentDescription = stringResource(Res.string.back)
                                 )
                             }
                         }
@@ -77,17 +79,7 @@ fun App() {
                             ListType.HOME, ListType.SEARCH -> {
                                 LaunchedEffect(autoCompleteSuggestions) {
                                     delay(500)
-                                    expanded = true
-                                }
-                                if (expanded) {
-                                    SuggestionDropdown(
-                                        suggestions = autoCompleteSuggestions,
-                                        onSuggestionSelected = {
-                                            mainViewModel.onSearchTextChanged(it)
-                                            mainViewModel.onListTypeChanged(ListType.SEARCH)
-                                            expanded = false
-                                        },
-                                    )
+                                    showAutocomplete = true
                                 }
                                 SearchBar(
                                     text = mainViewModel.searchText,
@@ -156,6 +148,20 @@ fun App() {
                             mainViewModel.onSearchTextChanged(text)
                             mainViewModel.onListTypeChanged(ListType.SEARCH)
                         }
+                    )
+                }
+            }
+
+            if (showAutocomplete && autoCompleteSuggestions.size > 1) {
+                Surface {
+                    AutocompleteSuggestions(
+                        suggestions = autoCompleteSuggestions,
+                        onSuggestionSelected = {
+                            mainViewModel.onSearchTextChanged(it)
+                            mainViewModel.onListTypeChanged(ListType.SEARCH)
+                            showAutocomplete = false
+                        },
+                        modifier = Modifier.padding(it)
                     )
                 }
             }

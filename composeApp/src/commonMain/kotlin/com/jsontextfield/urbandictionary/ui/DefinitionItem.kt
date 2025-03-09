@@ -27,6 +27,8 @@ import com.jsontextfield.urbandictionary.util.toAnnotatedString
 import org.jetbrains.compose.resources.stringResource
 import urbandictionary.composeapp.generated.resources.Res
 import urbandictionary.composeapp.generated.resources.bookmark
+import urbandictionary.composeapp.generated.resources.thumbs_down
+import urbandictionary.composeapp.generated.resources.thumbs_up
 
 @Composable
 fun DefinitionItem(
@@ -92,7 +94,7 @@ fun DefinitionItem(
             ) {
                 Icon(
                     Icons.Rounded.ThumbUp,
-                    contentDescription = "Thumbs up"
+                    contentDescription = stringResource(Res.string.thumbs_up)
                 )
                 Text(definition.thumbsUp.toString())
             }
@@ -102,7 +104,7 @@ fun DefinitionItem(
             ) {
                 Icon(
                     Icons.Rounded.ThumbUp,
-                    contentDescription = "Thumbs down",
+                    contentDescription = stringResource(Res.string.thumbs_down),
                     modifier = Modifier.rotate(180f)
                 )
                 Text(definition.thumbsDown.toString())
