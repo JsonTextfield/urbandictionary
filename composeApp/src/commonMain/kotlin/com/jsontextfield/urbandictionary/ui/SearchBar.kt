@@ -3,7 +3,6 @@ package com.jsontextfield.urbandictionary.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -16,15 +15,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
@@ -36,28 +29,29 @@ import urbandictionary.composeapp.generated.resources.search
 
 @Composable
 fun SearchBar(
-    text: String,
-    onTextChange: (String) -> Unit,
+    value: TextFieldValue,
+    onValueChanged: (TextFieldValue) -> Unit,
     onSearch: () -> Unit,
     onTextCleared: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    val focusRequester = remember { FocusRequester() }
     BasicTextField(
-        value = TextFieldValue(
-            text,
-            TextRange(text.length)
-        ),
-        onValueChange = {
-            onTextChange(it.text)
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .focusRequester(focusRequester),
+        value = value,
+        onValueChange = onValueChanged,
+        modifier = modifier,
         singleLine = true,
         textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground),
         cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
-        keyboardActions = KeyboardActions(onSearch = { onSearch() }),
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(
+            onSearch = {
+                onSearch()
+                defaultKeyboardAction(ImeAction.Done)
+            }
+        ),
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Search,
+            showKeyboardOnFocus = false
+        ),
         decorationBox = { innerTextField ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -66,7 +60,7 @@ fun SearchBar(
             ) {
                 Icon(Icons.Rounded.Search, contentDescription = null)
                 Box(modifier = Modifier.weight(1f)) {
-                    if (text.isEmpty()) {
+                    if (value.text.isEmpty()) {
                         Text(
                             stringResource(Res.string.search),
                             style = MaterialTheme.typography.bodyMedium.copy(
@@ -78,9 +72,9 @@ fun SearchBar(
                     }
                     innerTextField()
                 }
-                if (text.isNotEmpty()) {
+                if (value.text.isNotEmpty()) {
                     IconButton(onClick = {
-                        onTextChange("")
+                        onValueChanged(TextFieldValue(""))
                         onTextCleared()
                     }) {
                         Icon(
@@ -92,13 +86,4 @@ fun SearchBar(
             }
         }
     )
-
-    val windowInfo = LocalWindowInfo.current
-    LaunchedEffect(windowInfo) {
-        snapshotFlow { windowInfo.isWindowFocused }.collect { isWindowFocused ->
-            if (isWindowFocused) {
-                focusRequester.requestFocus()
-            }
-        }
-    }
 }

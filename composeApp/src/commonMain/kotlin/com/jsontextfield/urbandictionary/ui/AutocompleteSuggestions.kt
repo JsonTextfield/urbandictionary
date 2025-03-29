@@ -17,7 +17,7 @@ fun AutocompleteSuggestions(
     onSuggestionSelected: (String) -> Unit = {},
 ) {
     LazyColumn(modifier = modifier) {
-        items(suggestions) { suggestion ->
+        items(suggestions, key = { it }) { suggestion ->
             Text(
                 suggestion,
                 modifier = Modifier

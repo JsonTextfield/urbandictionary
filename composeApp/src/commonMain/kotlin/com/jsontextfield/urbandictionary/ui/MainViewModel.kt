@@ -3,6 +3,7 @@ package com.jsontextfield.urbandictionary.ui
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jsontextfield.urbandictionary.data.IPreferencesRepository
@@ -30,7 +31,7 @@ class MainViewModel(
 
     private var suggestionsJob: Job? = null
 
-    var searchText by mutableStateOf("")
+    var searchText by mutableStateOf(TextFieldValue(""))
         private set
 
     init {
@@ -50,13 +51,13 @@ class MainViewModel(
     /**
      * Show the autocomplete options when the search text is updated
      */
-    fun onSearchTextChanged(value: String) {
+    fun onSearchTextChanged(value: TextFieldValue) {
         searchText = value
         suggestionsJob?.cancel()
         suggestionsJob = viewModelScope.launch {
-            if (searchText.isNotBlank()) {
+            if (searchText.text.isNotBlank()) {
                 delay(500)
-                getAutoCompleteSuggestions(searchText)
+                getAutoCompleteSuggestions(searchText.text)
             } else {
                 _autoCompleteSuggestions.value = emptyList()
             }
@@ -68,7 +69,7 @@ class MainViewModel(
             _listType.value = value
             displayList = when (value) {
                 ListType.HOME -> dictionaryDataSource.getWordsOfTheDay(0)
-                ListType.SEARCH -> dictionaryDataSource.getDefinitions(searchText.lowercase(), 0)
+                ListType.SEARCH -> dictionaryDataSource.getDefinitions(searchText.text.lowercase(), 0)
                 ListType.RANDOM -> dictionaryDataSource.getRandomWords()
                 ListType.BOOKMARKS -> {
                     preferencesRepository.getBookmarks().flatMap {
@@ -86,7 +87,7 @@ class MainViewModel(
             if (displayList.size > 9) {
                 if (listType.value == ListType.SEARCH) {
                     displayList = displayList + dictionaryDataSource.getDefinitions(
-                        searchText.lowercase(),
+                        searchText.text.lowercase(),
                         displayList.size
                     )
                 } else if (listType.value == ListType.HOME) {

@@ -3,6 +3,7 @@ package com.jsontextfield.urbandictionary.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -30,6 +31,10 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.urbandictionary.ui.theme.MyApplicationTheme
 import kotlinx.coroutines.delay
@@ -46,6 +51,8 @@ import urbandictionary.composeapp.generated.resources.random_words
 @Preview
 fun App() {
     MyApplicationTheme {
+        val focusRequester = remember { FocusRequester() }
+        val focusManager = LocalFocusManager.current
         val mainViewModel = koinViewModel<MainViewModel>()
         val listType by mainViewModel.listType.collectAsState()
         val autoCompleteSuggestions by mainViewModel.autoCompleteSuggestions.collectAsState()
@@ -82,10 +89,11 @@ fun App() {
                                     showAutocomplete = true
                                 }
                                 SearchBar(
-                                    text = mainViewModel.searchText,
-                                    onTextChange = mainViewModel::onSearchTextChanged,
+                                    value = mainViewModel.searchText,
+                                    onValueChanged = mainViewModel::onSearchTextChanged,
                                     onSearch = { mainViewModel.onListTypeChanged(ListType.SEARCH) },
                                     onTextCleared = { mainViewModel.onListTypeChanged(ListType.HOME) },
+                                    modifier = Modifier.focusRequester(focusRequester)
                                 )
                             }
 
@@ -145,7 +153,7 @@ fun App() {
                             mainViewModel.onBookmark(definition.defid)
                         },
                         onTextClicked = { text ->
-                            mainViewModel.onSearchTextChanged(text)
+                            mainViewModel.onSearchTextChanged(TextFieldValue(text))
                             mainViewModel.onListTypeChanged(ListType.SEARCH)
                         }
                     )
@@ -156,12 +164,15 @@ fun App() {
                 Surface {
                     AutocompleteSuggestions(
                         suggestions = autoCompleteSuggestions,
-                        onSuggestionSelected = {
-                            mainViewModel.onSearchTextChanged(it)
+                        onSuggestionSelected = { suggestion ->
+                            mainViewModel.onSearchTextChanged(TextFieldValue(suggestion))
                             mainViewModel.onListTypeChanged(ListType.SEARCH)
                             showAutocomplete = false
+                            focusManager.clearFocus()
                         },
-                        modifier = Modifier.padding(it)
+                        modifier = Modifier
+                            .padding(it)
+                            .imePadding()
                     )
                 }
             }
