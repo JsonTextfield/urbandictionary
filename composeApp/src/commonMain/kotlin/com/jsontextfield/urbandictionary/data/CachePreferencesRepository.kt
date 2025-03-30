@@ -1,6 +1,6 @@
 package com.jsontextfield.urbandictionary.data
 
-class PreferencesRepository : IPreferencesRepository {
+class CachePreferencesRepository : IPreferencesRepository {
     private val bookmarks = mutableListOf<Int>()
     override suspend fun getBookmarks(): List<Int> {
         return bookmarks

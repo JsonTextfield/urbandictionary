@@ -18,6 +18,7 @@ koin = "4.0.0"
 ktor = "3.0.3"
 materialIconsExtended = "1.7.3"
 kotlinxDatetime = "0.6.1"
+datastore = "1.1.4"
 
 [libraries]
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
@@ -40,8 +41,11 @@ ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "kto
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+androidx-datastore = { module = "androidx.datastore:datastore", version.ref= "datastore"}
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref= "datastore"}
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
