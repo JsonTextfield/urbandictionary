@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalSerializationApi::class)
+@file:OptIn(ExperimentalSerializationApi::class, FormatStringsInDatetimeFormats::class)
 
 package com.jsontextfield.urbandictionary.network.model
 
@@ -29,17 +29,22 @@ data class Definition(
     @JsonNames("thumbs_up") val thumbsUp: Int,
     @JsonNames("thumbs_down") val thumbsDown: Int,
     val isBookmarked: Boolean = false
-){
-    @OptIn(FormatStringsInDatetimeFormats::class)
-    val writtenOnDate: String
+) {
+    val writtenOnDate: String?
         get() {
-        val inputFormatter = LocalDateTime.Format{
+            return try {
+                (inputFormatter.parse(writtenOn)).format(outputFormatter)
+            } catch (_: Exception) {
+                null
+            }
+        }
+
+    companion object {
+        private val inputFormatter = LocalDateTime.Format {
             byUnicodePattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         }
-        val outputFormatter = LocalDateTime.Format{
+        private val outputFormatter = LocalDateTime.Format {
             byUnicodePattern("dd-MM-yyyy")
         }
-        val date = inputFormatter.parse(writtenOn)
-        return date.format(outputFormatter)
     }
 }

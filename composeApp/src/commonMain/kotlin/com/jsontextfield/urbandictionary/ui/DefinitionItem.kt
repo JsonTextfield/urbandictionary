@@ -1,16 +1,17 @@
 package com.jsontextfield.urbandictionary.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.BookmarkBorder
-import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -18,7 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,23 +28,21 @@ import com.jsontextfield.urbandictionary.util.toAnnotatedString
 import org.jetbrains.compose.resources.stringResource
 import urbandictionary.composeapp.generated.resources.Res
 import urbandictionary.composeapp.generated.resources.bookmark
-import urbandictionary.composeapp.generated.resources.thumbs_down
-import urbandictionary.composeapp.generated.resources.thumbs_up
 
 @Composable
 fun DefinitionItem(
     definition: Definition,
     modifier: Modifier = Modifier,
     onBookmarkPressed: () -> Unit = {},
-    onTextClicked: (String) -> Unit = {},
+    onClick: () -> Unit = {},
+    onTextClick: (String) -> Unit = {},
 ) {
     Column(
         modifier = modifier
             .widthIn(max = 400.dp)
-            .background(
-                MaterialTheme.colorScheme.onSecondary,
-                RoundedCornerShape(16.dp)
-            )
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.onSecondary)
+            .clickable(onClick = onClick)
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
@@ -60,55 +59,39 @@ fun DefinitionItem(
                 )
             }
         }
-        Text(
-            definition.definition.toAnnotatedString(
-                MaterialTheme.colorScheme.primary,
-                onLinkClicked = onTextClicked
-            ),
-            style = MaterialTheme.typography.bodyMedium
-        )
-        Text(
-            definition.example.toAnnotatedString(
-                MaterialTheme.colorScheme.primary,
-                onLinkClicked = onTextClicked
-            ),
-            style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic)
-        )
+        SelectionContainer {
+            Text(
+                definition.definition.toAnnotatedString(
+                    MaterialTheme.colorScheme.primary,
+                    onLinkClicked = onTextClick
+                ),
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+        SelectionContainer {
+            Text(
+                definition.example.toAnnotatedString(
+                    MaterialTheme.colorScheme.primary,
+                    onLinkClicked = onTextClick
+                ),
+                style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic)
+            )
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(
                 definition.author,
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
             )
-            Text(
-                definition.writtenOnDate,
-                style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic)
-            )
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Icon(
-                    Icons.Rounded.ThumbUp,
-                    contentDescription = stringResource(Res.string.thumbs_up)
+            definition.writtenOnDate?.let {
+                Text(
+                    it,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic)
                 )
-                Text(definition.thumbsUp.toString())
-            }
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Icon(
-                    Icons.Rounded.ThumbUp,
-                    contentDescription = stringResource(Res.string.thumbs_down),
-                    modifier = Modifier.rotate(180f)
-                )
-                Text(definition.thumbsDown.toString())
             }
         }
+        RatingSection(
+            definition.thumbsUp.toString(),
+            definition.thumbsDown.toString(),
+        )
     }
 }
