@@ -21,11 +21,11 @@ class MainViewModel(
     private val preferencesRepository: IPreferencesRepository,
 ) : ViewModel() {
 
-    private var _listType: MutableStateFlow<ListType> = MutableStateFlow(ListType.HOME)
+    private val _listType: MutableStateFlow<ListType> = MutableStateFlow(ListType.HOME)
     val listType: StateFlow<ListType> = _listType.asStateFlow()
-    private var _wordsOfTheDay: MutableStateFlow<List<Definition>> = MutableStateFlow(emptyList())
-    var displayList by mutableStateOf(emptyList<Definition>())
-    private var _autoCompleteSuggestions: MutableStateFlow<List<String>> =
+    private val _displayList: MutableStateFlow<List<Definition>> = MutableStateFlow(emptyList())
+    val displayList: StateFlow<List<Definition>> = _displayList.asStateFlow()
+    private val _autoCompleteSuggestions: MutableStateFlow<List<String>> =
         MutableStateFlow(emptyList())
     val autoCompleteSuggestions: StateFlow<List<String>> = _autoCompleteSuggestions.asStateFlow()
 
@@ -36,45 +36,42 @@ class MainViewModel(
 
     init {
         viewModelScope.launch {
-            _wordsOfTheDay.value = dictionaryDataSource.getWordsOfTheDay(_wordsOfTheDay.value.size)
             onListTypeChanged(ListType.HOME)
         }
     }
 
-    private fun getAutoCompleteSuggestions(text: String) {
-        viewModelScope.launch {
-            _autoCompleteSuggestions.value =
-                dictionaryDataSource.getAutocompleteSuggestions(text)
-        }
-    }
-
-    /**
-     * Show the autocomplete options when the search text is updated
-     */
     fun onSearchTextChanged(value: TextFieldValue) {
         searchText = value
         suggestionsJob?.cancel()
         suggestionsJob = viewModelScope.launch {
             if (searchText.text.isNotBlank()) {
                 delay(500)
-                getAutoCompleteSuggestions(searchText.text)
+                _autoCompleteSuggestions.value =
+                    dictionaryDataSource.getAutocompleteSuggestions(value.text)
             } else {
                 _autoCompleteSuggestions.value = emptyList()
             }
         }
     }
 
+    fun onAutoCompleteSuggestionSelected(value: String) {
+        searchText = TextFieldValue(value)
+        _autoCompleteSuggestions.value = emptyList()
+        onListTypeChanged(ListType.SEARCH)
+    }
+
     fun onListTypeChanged(value: ListType) {
         viewModelScope.launch {
             _listType.value = value
-            displayList = when (value) {
+            _displayList.value = when (value) {
                 ListType.HOME -> dictionaryDataSource.getWordsOfTheDay(0)
-                ListType.SEARCH -> dictionaryDataSource.getDefinitions(searchText.text.lowercase(), 0)
+                ListType.SEARCH -> dictionaryDataSource.getDefinitions(
+                    searchText.text.lowercase(), 0
+                )
+
                 ListType.RANDOM -> dictionaryDataSource.getRandomWords()
-                ListType.BOOKMARKS -> {
-                    preferencesRepository.getBookmarks().flatMap {
-                        dictionaryDataSource.getDefinition(it)
-                    }
+                ListType.BOOKMARKS -> preferencesRepository.getBookmarks().flatMap {
+                    dictionaryDataSource.getDefinition(it)
                 }
             }.map {
                 it.copy(isBookmarked = it.defid in preferencesRepository.getBookmarks())
@@ -84,17 +81,16 @@ class MainViewModel(
 
     fun loadMore() {
         viewModelScope.launch {
-            if (displayList.size > 9) {
-                if (listType.value == ListType.SEARCH) {
-                    displayList = displayList + dictionaryDataSource.getDefinitions(
-                        searchText.text.lowercase(),
-                        displayList.size
+            if (displayList.value.size > 9) {
+                val moreDefinitions: List<Definition> = when (listType.value) {
+                    ListType.SEARCH -> dictionaryDataSource.getDefinitions(
+                        searchText.text.lowercase(), displayList.value.size
                     )
-                } else if (listType.value == ListType.HOME) {
-                    displayList = displayList + dictionaryDataSource.getWordsOfTheDay(
-                        displayList.size
-                    )
+
+                    ListType.HOME -> dictionaryDataSource.getWordsOfTheDay(displayList.value.size)
+                    else -> emptyList()
                 }
+                _displayList.value = displayList.value + moreDefinitions
             }
         }
     }
@@ -106,7 +102,7 @@ class MainViewModel(
             } else {
                 preferencesRepository.addBookmark(id)
             }
-            displayList = displayList.map {
+            _displayList.value = displayList.value.map {
                 if (it.defid == id) {
                     it.copy(isBookmarked = id in preferencesRepository.getBookmarks())
                 } else {
