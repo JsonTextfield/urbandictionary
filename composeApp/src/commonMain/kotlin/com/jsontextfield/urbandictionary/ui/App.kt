@@ -1,14 +1,9 @@
 package com.jsontextfield.urbandictionary.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Bookmark
@@ -24,20 +19,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
 import com.jsontextfield.urbandictionary.ui.theme.MyApplicationTheme
-import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -53,15 +41,18 @@ fun App() {
     MyApplicationTheme {
         val focusRequester = remember { FocusRequester() }
         val focusManager = LocalFocusManager.current
-        val mainViewModel = koinViewModel<MainViewModel>()
+        val mainViewModel: MainViewModel = koinViewModel()
         val listType by mainViewModel.listType.collectAsState()
+        val displayList by mainViewModel.displayList.collectAsState(emptyList())
         val autoCompleteSuggestions by mainViewModel.autoCompleteSuggestions.collectAsState()
         val listState = rememberLazyListState()
-        var showAutocomplete by remember { mutableStateOf(true) }
+        LaunchedEffect(listType) {
+            listState.scrollToItem(0)
+        }
         LaunchedEffect(listState) {
             snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
                 .collect { lastIndex ->
-                    if (lastIndex == mainViewModel.displayList.lastIndex) {
+                    if (lastIndex == displayList.lastIndex) {
                         mainViewModel.loadMore()
                     }
                 }
@@ -84,15 +75,10 @@ fun App() {
                     title = {
                         when (listType) {
                             ListType.HOME, ListType.SEARCH -> {
-                                LaunchedEffect(autoCompleteSuggestions) {
-                                    delay(500)
-                                    showAutocomplete = true
-                                }
                                 SearchBar(
                                     value = mainViewModel.searchText,
                                     onValueChanged = mainViewModel::onSearchTextChanged,
                                     onSearch = {
-                                        showAutocomplete = false
                                         mainViewModel.onListTypeChanged(ListType.SEARCH)
                                     },
                                     onTextCleared = { mainViewModel.onListTypeChanged(ListType.HOME) },
@@ -134,43 +120,24 @@ fun App() {
                 )
             },
         ) {
-            LazyColumn(
-                state = listState,
-                contentPadding = PaddingValues(
-                    top = 12.dp,
-                    bottom = 200.dp,
-                ),
+            DefinitionsList(
+                definitions = displayList,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it)
-                    .padding(horizontal = 12.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(mainViewModel.displayList, key = { item -> item.defid }) { definition ->
-                    DefinitionItem(
-                        definition,
-                        modifier = Modifier.animateItem(),
-                        onBookmarkPressed = {
-                            mainViewModel.onBookmark(definition.defid)
-                        },
-                        onTextClicked = { text ->
-                            mainViewModel.onSearchTextChanged(TextFieldValue(text))
-                            mainViewModel.onListTypeChanged(ListType.SEARCH)
-                        }
-                    )
-                }
-            }
+                    .padding(it),
+                listState = listState,
+                onTextClick = { text ->
+                    mainViewModel.onAutoCompleteSuggestionSelected(text)
+                },
+                onBookmarkPressed = mainViewModel::onBookmark,
+            )
 
-            if (showAutocomplete && autoCompleteSuggestions.size > 1) {
+            if (autoCompleteSuggestions.size > 1) {
                 Surface {
                     AutocompleteSuggestions(
                         suggestions = autoCompleteSuggestions,
                         onSuggestionSelected = { suggestion ->
-                            mainViewModel.onSearchTextChanged(TextFieldValue(suggestion))
-                            mainViewModel.onListTypeChanged(ListType.SEARCH)
-                            showAutocomplete = false
+                            mainViewModel.onAutoCompleteSuggestionSelected(suggestion)
                             focusManager.clearFocus()
                         },
                         modifier = Modifier
