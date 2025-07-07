@@ -11,7 +11,7 @@ class UrbanDictionaryAPI(private val client: HttpClient) {
     suspend fun getRandomWords(): UrbanDictionaryResponse {
         return client.get {
             url {
-                path("v0/random")
+                path("random")
             }
         }.body()
     }
@@ -19,7 +19,7 @@ class UrbanDictionaryAPI(private val client: HttpClient) {
     suspend fun getWordsOfTheDay(page: Int = 1): UrbanDictionaryResponse {
         return client.get {
             url {
-                path("v0/words_of_the_day")
+                path("words_of_the_day")
                 parameter("page", page)
             }
         }.body()
@@ -28,7 +28,7 @@ class UrbanDictionaryAPI(private val client: HttpClient) {
     suspend fun getWordDefinition(id: Int): UrbanDictionaryResponse {
         return client.get {
             url {
-                path("v0/define")
+                path("define")
                 parameter("defid", id)
             }
         }.body()
@@ -37,7 +37,7 @@ class UrbanDictionaryAPI(private val client: HttpClient) {
     suspend fun getWordDefinition(word: String, page: Int = 1): UrbanDictionaryResponse {
         return client.get {
             url {
-                path("v0/define")
+                path("define")
                 parameter("term", word)
                 parameter("page", page)
             }
@@ -47,7 +47,7 @@ class UrbanDictionaryAPI(private val client: HttpClient) {
     suspend fun getAutoCompleteSuggestions(query: String): List<String> {
         return client.get {
             url {
-                path("v0/autocomplete")
+                path("autocomplete")
                 parameter("term", query)
             }
         }.body()

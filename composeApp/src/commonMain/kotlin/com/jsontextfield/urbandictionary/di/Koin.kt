@@ -42,7 +42,7 @@ val networkModule = module {
                 level = LogLevel.HEADERS
             }
             defaultRequest {
-                url("https://api.urbandictionary.com/")
+                url("https://api.urbandictionary.com/v0/")
             }
         }
     }
