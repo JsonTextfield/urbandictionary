@@ -22,9 +22,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.unit.dp
 import com.jsontextfield.urbandictionary.ui.theme.MyApplicationTheme
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -60,6 +62,7 @@ fun App() {
         Scaffold(
             topBar = {
                 TopAppBar(
+                    modifier = Modifier.shadow(elevation = 4.dp),
                     navigationIcon = {
                         if (listType != ListType.HOME) {
                             IconButton(onClick = {

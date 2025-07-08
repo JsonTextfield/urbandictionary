@@ -33,18 +33,25 @@ data class Definition(
     val writtenOnDate: String?
         get() {
             return try {
-                (inputFormatter.parse(writtenOn)).format(outputFormatter)
+                (inputFormatter1.parse(writtenOn)).format(outputFormatter)
             } catch (_: Exception) {
-                null
+                try {
+                    (inputFormatter2.parse(writtenOn)).format(outputFormatter)
+                } catch (_: Exception) {
+                    null
+                }
             }
         }
 
     companion object {
-        private val inputFormatter = LocalDateTime.Format {
+        private val inputFormatter1 = LocalDateTime.Format {
             byUnicodePattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         }
+        private val inputFormatter2 = LocalDateTime.Format {
+            byUnicodePattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        }
         private val outputFormatter = LocalDateTime.Format {
-            byUnicodePattern("dd-MM-yyyy")
+            byUnicodePattern("dd/MM/yyyy")
         }
     }
 }

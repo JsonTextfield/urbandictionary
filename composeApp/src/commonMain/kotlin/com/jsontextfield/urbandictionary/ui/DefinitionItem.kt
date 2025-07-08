@@ -49,7 +49,7 @@ fun DefinitionItem(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 definition.word,
-                style = MaterialTheme.typography.headlineLarge,
+                style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.primary),
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = onBookmarkPressed) {
@@ -60,33 +60,33 @@ fun DefinitionItem(
             }
         }
         SelectionContainer {
-            Text(
-                definition.definition.toAnnotatedString(
-                    MaterialTheme.colorScheme.primary,
-                    onLinkClicked = onTextClick
-                ),
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-        SelectionContainer {
-            Text(
-                definition.example.toAnnotatedString(
-                    MaterialTheme.colorScheme.primary,
-                    onLinkClicked = onTextClick
-                ),
-                style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic)
-            )
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Text(
-                definition.author,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
-            )
-            definition.writtenOnDate?.let {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text(
-                    it,
+                    definition.definition.toAnnotatedString(
+                        MaterialTheme.colorScheme.primary,
+                        onLinkClicked = onTextClick
+                    ),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    definition.example.toAnnotatedString(
+                        MaterialTheme.colorScheme.primary,
+                        onLinkClicked = onTextClick
+                    ),
                     style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic)
                 )
+                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Text(
+                        definition.author,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
+                    )
+                    definition.writtenOnDate?.let {
+                        Text(
+                            it,
+                            style = MaterialTheme.typography.bodyMedium.copy(fontStyle = FontStyle.Italic)
+                        )
+                    }
+                }
             }
         }
         RatingSection(

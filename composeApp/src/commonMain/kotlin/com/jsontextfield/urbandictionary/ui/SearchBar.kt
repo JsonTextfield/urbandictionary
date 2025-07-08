@@ -1,9 +1,12 @@
 package com.jsontextfield.urbandictionary.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -37,7 +40,12 @@ fun SearchBar(
     BasicTextField(
         value = value,
         onValueChange = onValueChanged,
-        modifier = modifier,
+        modifier = modifier
+            .padding(vertical = 12.dp)
+            .background(
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                shape = RoundedCornerShape(24.dp)
+            ),
         singleLine = true,
         textStyle = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onBackground),
         cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
@@ -55,7 +63,9 @@ fun SearchBar(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.heightIn(min = 56.dp)
+                modifier = Modifier
+                    .padding(horizontal = 12.dp)
+                    .heightIn(min = 56.dp)
             ) {
                 Icon(Icons.Rounded.Search, contentDescription = null)
                 Box(modifier = Modifier.weight(1f)) {
