@@ -9,10 +9,19 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.Font
 import urbandictionary.composeapp.generated.resources.Res
 import urbandictionary.composeapp.generated.resources.lora_bold
+import urbandictionary.composeapp.generated.resources.lora_bold_italic
+import urbandictionary.composeapp.generated.resources.lora_italic
+import urbandictionary.composeapp.generated.resources.lora_regular
+import urbandictionary.composeapp.generated.resources.source_sans_pro_bold
+import urbandictionary.composeapp.generated.resources.source_sans_pro_bold_italic
+import urbandictionary.composeapp.generated.resources.source_sans_pro_italic
+import urbandictionary.composeapp.generated.resources.source_sans_pro_regular
 
 @Composable
 fun MyApplicationTheme(
@@ -98,7 +107,52 @@ fun MyApplicationTheme(
     }
     val typography = Typography(
         headlineLarge = MaterialTheme.typography.headlineLarge.copy(
-            fontFamily = FontFamily(Font(Res.font.lora_bold)),
+            fontFamily = FontFamily(
+                Font(
+                    Res.font.lora_regular,
+                    weight = FontWeight.Normal,
+                    style = FontStyle.Normal,
+                ),
+                Font(
+                    Res.font.lora_bold,
+                    weight = FontWeight.Bold,
+                    style = FontStyle.Normal,
+                ),
+                Font(
+                    Res.font.lora_italic,
+                    weight = FontWeight.Normal,
+                    style = FontStyle.Italic,
+                ),
+                Font(
+                    Res.font.lora_bold_italic,
+                    weight = FontWeight.Bold,
+                    style = FontStyle.Italic,
+                ),
+            ),
+        ),
+        bodyMedium = MaterialTheme.typography.bodyMedium.copy(
+            fontFamily = FontFamily(
+                Font(
+                    Res.font.source_sans_pro_regular,
+                    weight = FontWeight.Normal,
+                    style = FontStyle.Normal,
+                ),
+                Font(
+                    Res.font.source_sans_pro_bold,
+                    weight = FontWeight.Bold,
+                    style = FontStyle.Normal,
+                ),
+                Font(
+                    Res.font.source_sans_pro_italic,
+                    weight = FontWeight.Normal,
+                    style = FontStyle.Italic,
+                ),
+                Font(
+                    Res.font.source_sans_pro_bold_italic,
+                    weight = FontWeight.Bold,
+                    style = FontStyle.Italic,
+                ),
+            ),
         ),
     )
     val shapes = Shapes(

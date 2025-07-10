@@ -49,7 +49,10 @@ fun DefinitionItem(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 definition.word,
-                style = MaterialTheme.typography.headlineLarge.copy(color = MaterialTheme.colorScheme.primary),
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                ),
                 modifier = Modifier.weight(1f)
             )
             IconButton(onClick = onBookmarkPressed) {
