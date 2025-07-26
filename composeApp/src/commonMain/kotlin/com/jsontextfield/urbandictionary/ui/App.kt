@@ -21,7 +21,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -36,7 +38,7 @@ import urbandictionary.composeapp.generated.resources.back
 import urbandictionary.composeapp.generated.resources.bookmarks
 import urbandictionary.composeapp.generated.resources.random_words
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 @Preview
 fun App() {
@@ -48,6 +50,11 @@ fun App() {
         val displayList by mainViewModel.displayList.collectAsState(emptyList())
         val autoCompleteSuggestions by mainViewModel.autoCompleteSuggestions.collectAsState()
         val listState = rememberLazyListState()
+        BackHandler(enabled = listType != ListType.HOME) {
+            if (listType != ListType.HOME) {
+                mainViewModel.onListTypeChanged(ListType.HOME)
+            }
+        }
         LaunchedEffect(listType) {
             listState.scrollToItem(0)
         }
