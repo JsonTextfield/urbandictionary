@@ -64,6 +64,8 @@ kotlin {
             // DataStore
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
+
+            implementation("org.jetbrains.compose.ui:ui-backhandler")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
