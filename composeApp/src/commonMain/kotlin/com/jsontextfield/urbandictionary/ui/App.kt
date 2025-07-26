@@ -51,6 +51,9 @@ fun App() {
         val autoCompleteSuggestions by mainViewModel.autoCompleteSuggestions.collectAsState()
         val listState = rememberLazyListState()
         BackHandler(enabled = listType != ListType.HOME) {
+            if (autoCompleteSuggestions.isNotEmpty()) {
+                mainViewModel.onAutoCompleteSuggestionSelected("")
+            }
             if (listType != ListType.HOME) {
                 mainViewModel.onListTypeChanged(ListType.HOME)
             }
