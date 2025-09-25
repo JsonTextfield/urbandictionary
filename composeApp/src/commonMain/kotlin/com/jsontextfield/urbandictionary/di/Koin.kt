@@ -20,6 +20,7 @@ import kotlinx.serialization.json.Json
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.dsl.module
 
@@ -49,7 +50,7 @@ val networkModule = module {
 }
 
 val dataModule = module {
-    single<UrbanDictionaryAPI> { UrbanDictionaryAPI(get<HttpClient>()) }
+    singleOf(::UrbanDictionaryAPI)
     single<IUrbanDictionaryDataSource> {
         UrbanDictionaryDataSource(get<UrbanDictionaryAPI>())
     }

@@ -1,6 +1,8 @@
 package com.jsontextfield.urbandictionary.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -21,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
@@ -88,15 +91,17 @@ fun App() {
                     title = {
                         when (listType) {
                             ListType.HOME, ListType.SEARCH -> {
-                                SearchBar(
-                                    value = mainViewModel.searchText,
-                                    onValueChanged = mainViewModel::onSearchTextChanged,
-                                    onSearch = {
-                                        mainViewModel.onListTypeChanged(ListType.SEARCH)
-                                    },
-                                    onTextCleared = { mainViewModel.onListTypeChanged(ListType.HOME) },
-                                    modifier = Modifier.focusRequester(focusRequester)
-                                )
+                                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                                    SearchBar(
+                                        value = mainViewModel.searchText,
+                                        onValueChanged = mainViewModel::onSearchTextChanged,
+                                        onSearch = {
+                                            mainViewModel.onListTypeChanged(ListType.SEARCH)
+                                        },
+                                        onTextCleared = { mainViewModel.onListTypeChanged(ListType.HOME) },
+                                        modifier = Modifier.focusRequester(focusRequester)
+                                    )
+                                }
                             }
 
                             ListType.RANDOM -> {

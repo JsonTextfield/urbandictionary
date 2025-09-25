@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -41,6 +42,7 @@ fun SearchBar(
         value = value,
         onValueChange = onValueChanged,
         modifier = modifier
+            .widthIn(max = 300.dp)
             .padding(vertical = 12.dp)
             .background(
                 color = MaterialTheme.colorScheme.secondaryContainer,
