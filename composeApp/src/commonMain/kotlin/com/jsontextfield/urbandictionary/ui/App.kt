@@ -1,11 +1,14 @@
 package com.jsontextfield.urbandictionary.ui
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Bookmark
@@ -23,15 +26,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.LayoutDirection
 import com.jsontextfield.urbandictionary.ui.theme.MyApplicationTheme
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -52,7 +54,7 @@ fun App() {
         val listType by mainViewModel.listType.collectAsState()
         val displayList by mainViewModel.displayList.collectAsState(emptyList())
         val autoCompleteSuggestions by mainViewModel.autoCompleteSuggestions.collectAsState()
-        val listState = rememberLazyListState()
+        val gridState = rememberLazyStaggeredGridState()
         BackHandler(enabled = listType != ListType.HOME) {
             if (autoCompleteSuggestions.isNotEmpty()) {
                 mainViewModel.onAutoCompleteSuggestionSelected("")
@@ -62,10 +64,10 @@ fun App() {
             }
         }
         LaunchedEffect(listType) {
-            listState.scrollToItem(0)
+            gridState.scrollToItem(0)
         }
-        LaunchedEffect(listState) {
-            snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+        LaunchedEffect(gridState) {
+            snapshotFlow { gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
                 .collect { lastIndex ->
                     if (lastIndex == displayList.lastIndex) {
                         mainViewModel.loadMore()
@@ -75,33 +77,32 @@ fun App() {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    modifier = Modifier.shadow(elevation = 4.dp),
                     navigationIcon = {
-                        if (listType != ListType.HOME) {
-                            IconButton(onClick = {
+                        IconButton(
+                            onClick = {
                                 mainViewModel.onListTypeChanged(ListType.HOME)
-                            }) {
-                                Icon(
-                                    Icons.AutoMirrored.Rounded.ArrowBack,
-                                    contentDescription = stringResource(Res.string.back)
-                                )
-                            }
+                            },
+                            enabled = listType != ListType.HOME,
+                            modifier = Modifier.alpha(if (listType != ListType.HOME) 1f else 0f)
+                        ) {
+                            Icon(
+                                Icons.AutoMirrored.Rounded.ArrowBack,
+                                contentDescription = stringResource(Res.string.back)
+                            )
                         }
                     },
                     title = {
                         when (listType) {
                             ListType.HOME, ListType.SEARCH -> {
-                                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                                    SearchBar(
-                                        value = mainViewModel.searchText,
-                                        onValueChanged = mainViewModel::onSearchTextChanged,
-                                        onSearch = {
-                                            mainViewModel.onListTypeChanged(ListType.SEARCH)
-                                        },
-                                        onTextCleared = { mainViewModel.onListTypeChanged(ListType.HOME) },
-                                        modifier = Modifier.focusRequester(focusRequester)
-                                    )
-                                }
+                                SearchBar(
+                                    value = mainViewModel.searchText,
+                                    onValueChanged = mainViewModel::onSearchTextChanged,
+                                    onSearch = {
+                                        mainViewModel.onListTypeChanged(ListType.SEARCH)
+                                    },
+                                    onTextCleared = { mainViewModel.onListTypeChanged(ListType.HOME) },
+                                    modifier = Modifier.focusRequester(focusRequester)
+                                )
                             }
 
                             ListType.RANDOM -> {
@@ -142,8 +143,18 @@ fun App() {
                 definitions = displayList,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(it),
-                listState = listState,
+                    .padding(
+                        top = it.calculateTopPadding(),
+                        start = WindowInsets.safeDrawing.asPaddingValues()
+                            .calculateStartPadding(
+                                LayoutDirection.Ltr
+                            ),
+                        end = WindowInsets.safeDrawing.asPaddingValues()
+                            .calculateEndPadding(
+                                LayoutDirection.Ltr
+                            )
+                    ),
+                state = gridState,
                 onTextClick = { text ->
                     mainViewModel.onAutoCompleteSuggestionSelected(text)
                 },

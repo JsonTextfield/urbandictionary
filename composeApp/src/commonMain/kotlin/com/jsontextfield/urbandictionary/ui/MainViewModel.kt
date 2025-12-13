@@ -14,6 +14,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class MainViewModel(
@@ -35,9 +38,12 @@ class MainViewModel(
         private set
 
     init {
-        viewModelScope.launch {
-            onListTypeChanged(ListType.HOME)
-        }
+        preferencesRepository.getBookmarks().map { bookmarks ->
+            _displayList.value = displayList.value.map {
+                it.copy(isBookmarked = it.defid in bookmarks)
+            }
+        }.launchIn(viewModelScope)
+        onListTypeChanged(ListType.HOME)
     }
 
     fun onSearchTextChanged(value: TextFieldValue) {
@@ -62,6 +68,7 @@ class MainViewModel(
 
     fun onListTypeChanged(value: ListType) {
         viewModelScope.launch {
+            val bookmarks = preferencesRepository.getBookmarks().first()
             _listType.value = value
             _displayList.value = when (value) {
                 ListType.HOME -> dictionaryDataSource.getWordsOfTheDay(0)
@@ -70,17 +77,18 @@ class MainViewModel(
                 )
 
                 ListType.RANDOM -> dictionaryDataSource.getRandomWords()
-                ListType.BOOKMARKS -> preferencesRepository.getBookmarks().flatMap {
+                ListType.BOOKMARKS -> bookmarks.flatMap {
                     dictionaryDataSource.getDefinition(it)
-                }
+                }.toList()
             }.map {
-                it.copy(isBookmarked = it.defid in preferencesRepository.getBookmarks())
+                it.copy(isBookmarked = it.defid in bookmarks)
             }
         }
     }
 
     fun loadMore() {
         viewModelScope.launch {
+            delay(400)
             if (displayList.value.size > 9) {
                 val moreDefinitions: List<Definition> = when (listType.value) {
                     ListType.SEARCH -> dictionaryDataSource.getDefinitions(
@@ -95,20 +103,9 @@ class MainViewModel(
         }
     }
 
-    fun onBookmark(id: Int) {
+    fun onBookmark(id: String) {
         viewModelScope.launch {
-            if (id in preferencesRepository.getBookmarks()) {
-                preferencesRepository.removeBookmark(id)
-            } else {
-                preferencesRepository.addBookmark(id)
-            }
-            _displayList.value = displayList.value.map {
-                if (it.defid == id) {
-                    it.copy(isBookmarked = id in preferencesRepository.getBookmarks())
-                } else {
-                    it
-                }
-            }
+            preferencesRepository.setBookmarks(id)
         }
     }
 

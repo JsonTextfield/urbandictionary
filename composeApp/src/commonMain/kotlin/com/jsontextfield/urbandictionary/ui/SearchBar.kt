@@ -42,7 +42,7 @@ fun SearchBar(
         value = value,
         onValueChange = onValueChanged,
         modifier = modifier
-            .widthIn(max = 300.dp)
+            .widthIn(max = 240.dp)
             .padding(vertical = 12.dp)
             .background(
                 color = MaterialTheme.colorScheme.secondaryContainer,
