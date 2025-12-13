@@ -1,9 +1,9 @@
 package com.jsontextfield.urbandictionary.data
 
+import kotlinx.coroutines.flow.Flow
+
 interface IPreferencesRepository {
-    suspend fun getBookmarks() : List<Int>
+    fun getBookmarks() : Flow<Set<String>>
 
-    suspend fun addBookmark(id: Int)
-
-    suspend fun removeBookmark(id: Int)
+    suspend fun setBookmarks(id: String)
 }

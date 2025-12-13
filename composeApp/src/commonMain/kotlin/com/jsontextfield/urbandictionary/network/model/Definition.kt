@@ -17,7 +17,7 @@ data class UrbanDictionaryResponse(
 
 @Serializable
 data class Definition(
-    val defid: Int,
+    val defid: String,
     val word: String,
     val definition: String,
     val author: String,

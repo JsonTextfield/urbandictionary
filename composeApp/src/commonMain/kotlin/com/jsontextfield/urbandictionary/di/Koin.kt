@@ -26,29 +26,6 @@ import org.koin.dsl.module
 
 expect val platformModule: Module
 
-val networkModule = module {
-    single<HttpClient> {
-        HttpClient {
-            install(ContentNegotiation) {
-                json(
-                    Json {
-                        prettyPrint = true
-                        isLenient = true
-                        ignoreUnknownKeys = true
-                    }
-                )
-            }
-            install(Logging) {
-                logger = Logger.SIMPLE
-                level = LogLevel.HEADERS
-            }
-            defaultRequest {
-                url("https://api.urbandictionary.com/v0/")
-            }
-        }
-    }
-}
-
 val dataModule = module {
     singleOf(::UrbanDictionaryAPI)
     single<IUrbanDictionaryDataSource> {
@@ -68,7 +45,6 @@ fun initKoin(config: KoinAppDeclaration? = null) {
     startKoin {
         config?.invoke(this)
         modules(
-            networkModule,
             dataModule,
             viewModelModule,
             platformModule,

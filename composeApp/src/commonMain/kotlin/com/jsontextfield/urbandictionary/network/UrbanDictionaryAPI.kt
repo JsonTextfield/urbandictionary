@@ -3,11 +3,38 @@ package com.jsontextfield.urbandictionary.network
 import com.jsontextfield.urbandictionary.network.model.UrbanDictionaryResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.logging.SIMPLE
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.http.path
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 
-class UrbanDictionaryAPI(private val client: HttpClient) {
+class UrbanDictionaryAPI() {
+    private val client = HttpClient {
+        install(ContentNegotiation) {
+            json(
+                Json {
+                    prettyPrint = true
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                }
+            )
+        }
+        install(Logging) {
+            logger = Logger.SIMPLE
+            level = LogLevel.HEADERS
+        }
+        defaultRequest {
+            url("https://api.urbandictionary.com/v0/")
+        }
+    }
+
     suspend fun getRandomWords(): UrbanDictionaryResponse {
         return try {
             client.get {
@@ -33,7 +60,7 @@ class UrbanDictionaryAPI(private val client: HttpClient) {
         }
     }
 
-    suspend fun getWordDefinition(id: Int): UrbanDictionaryResponse {
+    suspend fun getWordDefinition(id: String): UrbanDictionaryResponse {
         return try {
             client.get {
                 url {
