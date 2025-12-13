@@ -11,9 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Clear
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,9 +22,12 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import urbandictionary.composeapp.generated.resources.Res
 import urbandictionary.composeapp.generated.resources.clear
+import urbandictionary.composeapp.generated.resources.round_clear_24
+import urbandictionary.composeapp.generated.resources.round_search_24
 import urbandictionary.composeapp.generated.resources.search
 
 @Composable
@@ -69,7 +69,7 @@ fun SearchBar(
                     .padding(horizontal = 12.dp)
                     .heightIn(min = 56.dp)
             ) {
-                Icon(Icons.Rounded.Search, contentDescription = null)
+                Icon(painterResource(Res.drawable.round_search_24), contentDescription = null)
                 Box(modifier = Modifier.weight(1f)) {
                     if (value.text.isEmpty()) {
                         Text(
@@ -89,7 +89,7 @@ fun SearchBar(
                         onTextCleared()
                     }) {
                         Icon(
-                            Icons.Rounded.Clear,
+                            painterResource(Res.drawable.round_clear_24),
                             contentDescription = stringResource(Res.string.clear),
                         )
                     }

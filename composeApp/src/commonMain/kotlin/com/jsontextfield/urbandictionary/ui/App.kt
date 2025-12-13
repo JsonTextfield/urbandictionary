@@ -9,10 +9,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Bookmark
-import androidx.compose.material.icons.rounded.Shuffle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,6 +31,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.LayoutDirection
 import com.jsontextfield.urbandictionary.ui.theme.MyApplicationTheme
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -42,6 +39,9 @@ import urbandictionary.composeapp.generated.resources.Res
 import urbandictionary.composeapp.generated.resources.back
 import urbandictionary.composeapp.generated.resources.bookmarks
 import urbandictionary.composeapp.generated.resources.random_words
+import urbandictionary.composeapp.generated.resources.round_arrow_back_24
+import urbandictionary.composeapp.generated.resources.round_bookmark_24
+import urbandictionary.composeapp.generated.resources.round_shuffle_24
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -86,7 +86,7 @@ fun App() {
                             modifier = Modifier.alpha(if (listType != ListType.HOME) 1f else 0f)
                         ) {
                             Icon(
-                                Icons.AutoMirrored.Rounded.ArrowBack,
+                                painterResource(Res.drawable.round_arrow_back_24),
                                 contentDescription = stringResource(Res.string.back)
                             )
                         }
@@ -120,7 +120,7 @@ fun App() {
                                 mainViewModel.onListTypeChanged(ListType.BOOKMARKS)
                             }) {
                                 Icon(
-                                    Icons.Rounded.Bookmark,
+                                    painterResource(Res.drawable.round_bookmark_24),
                                     contentDescription = stringResource(Res.string.bookmarks)
                                 )
                             }
@@ -130,7 +130,7 @@ fun App() {
                                 mainViewModel.onListTypeChanged(ListType.RANDOM)
                             }) {
                                 Icon(
-                                    Icons.Rounded.Shuffle,
+                                    painterResource(Res.drawable.round_shuffle_24),
                                     contentDescription = stringResource(Res.string.random_words)
                                 )
                             }

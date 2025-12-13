@@ -56,8 +56,6 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.serialization.json)
-
-            implementation(libs.material.icons.extended)
             
             implementation(libs.kotlinx.datetime)
 
@@ -69,7 +67,7 @@ kotlin {
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
 
-            implementation("org.jetbrains.compose.ui:ui-backhandler")
+            implementation(libs.ui.backhandler)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -79,14 +77,14 @@ kotlin {
 
 android {
     namespace = "com.jsontextfield.urbandictionary"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "com.jsontextfield.urbandictionary"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
+        versionCode = libs.versions.versionCode.get().toInt()
+        versionName = libs.versions.versionName.get()
     }
     packaging {
         resources {

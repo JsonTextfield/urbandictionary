@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Bookmark
-import androidx.compose.material.icons.rounded.BookmarkBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,9 +22,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.jsontextfield.urbandictionary.network.model.Definition
 import com.jsontextfield.urbandictionary.util.toAnnotatedString
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import urbandictionary.composeapp.generated.resources.Res
 import urbandictionary.composeapp.generated.resources.bookmark
+import urbandictionary.composeapp.generated.resources.round_bookmark_24
+import urbandictionary.composeapp.generated.resources.round_bookmark_border_24
+import urbandictionary.composeapp.generated.resources.round_shuffle_24
 
 @Composable
 fun DefinitionItem(
@@ -57,7 +58,13 @@ fun DefinitionItem(
             )
             IconButton(onClick = onBookmarkPressed) {
                 Icon(
-                    if (definition.isBookmarked) Icons.Rounded.Bookmark else Icons.Rounded.BookmarkBorder,
+                    painterResource(
+                        if (definition.isBookmarked) {
+                            Res.drawable.round_bookmark_24
+                        } else {
+                            Res.drawable.round_bookmark_border_24
+                        }
+                    ),
                     contentDescription = stringResource(Res.string.bookmark)
                 )
             }

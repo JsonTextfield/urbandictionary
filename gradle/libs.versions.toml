@@ -1,39 +1,25 @@
 [versions]
-agp = "8.8.2"
-android-compileSdk = "35"
-android-minSdk = "24"
-android-targetSdk = "35"
-androidx-activityCompose = "1.10.1"
-androidx-appcompat = "1.7.1"
-androidx-core-ktx = "1.16.0"
-androidx-espresso-core = "3.6.1"
-androidx-lifecycle = "2.9.1"
-androidx-material = "1.12.0"
-androidx-material-icons = "1.7.8"
-androidx-test-junit = "1.2.1"
+agp = "8.13.2"
+compileSdk = "36"
+minSdk = "24"
+targetSdk = "36"
+versionCode = "1"
+versionName = "1.0.0"
+androidx-activityCompose = "1.12.1"
+androidx-lifecycle = "2.9.6"
 compose-multiplatform = "1.8.2"
 glance = "1.1.1"
-junit = "4.13.2"
-kotlin = "2.2.0"
-koin = "4.1.0"
-ktor = "3.2.1"
-materialIconsExtended = "1.7.3"
+kotlin = "2.2.21"
+koin = "4.1.1"
+ktor = "3.3.3"
 kotlinxDatetime = "0.6.1"
-datastore = "1.1.7"
+datastore = "1.2.0"
 
 [libraries]
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
 androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glance" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
-androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso-core" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
-androidx-material = { group = "com.google.android.material", name = "material", version.ref = "androidx-material" }
-androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "androidx-material-icons" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
@@ -46,9 +32,9 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
-material-icons-extended = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref= "datastore"}
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref= "datastore"}
+ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
